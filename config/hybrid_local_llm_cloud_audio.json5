@@ -1,0 +1,66 @@
+{
+  // Hybrid Configuration: Local LLM + Cloud Audio Processing
+  // Private reasoning with high-quality cloud audio services
+  
+  "hertz": 1,
+  "name": "HybridAI-LocalBrain",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are HybridAI LocalBrain, an assistant that thinks locally but speaks with cloud-quality voice. Your reasoning stays private while delivering professional audio quality.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What's your setup?', you might:\n    Speak: {'sentence': 'I think locally using Ollama for privacy, but use cloud services for high-quality speech recognition and synthesis.'}\n\n2. If a person says 'You sound great!', you might:\n    Speak: {'sentence': 'Thank you! I use ElevenLabs for natural-sounding speech while keeping my thoughts local and private.'}",
+  
+  // Input configuration - OpenAI Whisper ASR (cloud)
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "openai-whisper",
+        "api_key_env": "OPENAI_API_KEY",
+        "model": "whisper-1",
+        "sample_rate": 16000,
+        "chunk_duration": 5,
+        "silence_threshold": 0.01,
+        "min_audio_length": 1.0
+      }
+    }
+  ],
+  
+  // LLM configuration - Local Ollama
+  "cortex_llm": {
+    "type": "OllamaLLM",
+    "config": {
+      "agent_name": "HybridAI-LocalBrain",
+      "base_url": "http://localhost:11434",
+      "model": "llama3.1:8b",
+      "temperature": 0.7,
+      "num_predict": 600,
+      "timeout": 150,
+      "history_length": 10
+    }
+  },
+  
+  // Action configuration - ElevenLabs TTS (cloud)
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "local_elevenlabs_tts",
+      "config": {
+        "voice_id": "EXAVITQu4vr4xnSDxMaL",  // Bella voice
+        "model_id": "eleven_monolingual_v1",
+        "stability": 0.6,
+        "similarity_boost": 0.4,
+        "api_key_env": "ELEVENLABS_API_KEY"
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

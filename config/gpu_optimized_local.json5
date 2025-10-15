@@ -1,0 +1,73 @@
+{
+  // GPU-Optimized Local Configuration: High-performance local models
+  // Requires NVIDIA GPU with CUDA for optimal performance
+  
+  "hertz": 2,  // Higher frequency for better responsiveness
+  "name": "LocalAI-GPU",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are LocalAI GPU, a high-performance offline assistant optimized for GPU acceleration. You provide fast, intelligent responses while maintaining complete privacy and independence from cloud services.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'How fast are you?', you might:\n    Speak: {'sentence': 'I'm optimized for GPU acceleration, so I can process your requests much faster than CPU-only setups while staying completely offline.'}\n\n2. If a person says 'Impressive!', you might:\n    Speak: {'sentence': 'Thank you! GPU acceleration allows me to run larger, more capable models locally while maintaining excellent performance.'}",
+  
+  // Input configuration - Faster-Whisper with GPU
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "faster-whisper",
+        "model_size": "large-v3",  // Larger model for better accuracy
+        "device": "cuda",  // GPU acceleration
+        "compute_type": "float16",  // GPU-optimized precision
+        "sample_rate": 16000,
+        "chunk_duration": 3,  // Shorter chunks for faster response
+        "silence_threshold": 0.01,
+        "min_audio_length": 0.5,
+        "beam_size": 5,  // Better accuracy
+        "best_of": 5
+      }
+    }
+  ],
+  
+  // LLM configuration - Ollama with GPU optimization
+  "cortex_llm": {
+    "type": "OllamaLLM",
+    "config": {
+      "agent_name": "LocalAI-GPU",
+      "base_url": "http://localhost:11434",
+      "model": "llama3.1:70b",  // Larger model possible with GPU
+      "temperature": 0.7,
+      "num_predict": 800,
+      "timeout": 60,  // Faster with GPU
+      "history_length": 15,
+      "num_gpu": -1,  // Use all available GPUs
+      "num_thread": 8
+    }
+  },
+  
+  // Action configuration - High-quality local TTS
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "piper_tts",
+      "config": {
+        "model_path": "/usr/local/share/piper/voices/en_US-libritts-high.onnx",
+        "config_path": "/usr/local/share/piper/voices/en_US-libritts-high.onnx.json",
+        "speaker_id": 0,
+        "length_scale": 0.9,  // Slightly faster speech
+        "noise_scale": 0.5,   // Lower noise for cleaner audio
+        "noise_w": 0.6,
+        "use_gpu": true  // GPU acceleration if available
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

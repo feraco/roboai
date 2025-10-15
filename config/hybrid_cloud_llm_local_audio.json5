@@ -1,0 +1,66 @@
+{
+  // Hybrid Configuration: Cloud LLM + Local Audio Processing
+  // Best of both worlds: powerful cloud reasoning with local audio privacy
+  
+  "hertz": 1,
+  "name": "HybridAI-CloudBrain",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are HybridAI, a smart assistant that combines cloud-based intelligence with local audio processing. You provide high-quality responses while keeping your voice interactions private.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'How do you work?', you might:\n    Speak: {'sentence': 'I use cloud AI for thinking and reasoning, but all your voice data stays local on your device for privacy.'}\n\n2. If a person says 'That's interesting!', you might:\n    Speak: {'sentence': 'I'm glad you find it interesting! This hybrid approach gives you both powerful AI and audio privacy.'}",
+  
+  // Input configuration - Local Faster-Whisper ASR
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "faster-whisper",
+        "model_size": "base",
+        "device": "cpu",
+        "compute_type": "int8",
+        "sample_rate": 16000,
+        "chunk_duration": 5,
+        "silence_threshold": 0.01,
+        "min_audio_length": 1.0
+      }
+    }
+  ],
+  
+  // LLM configuration - OpenAI GPT-4 (cloud)
+  "cortex_llm": {
+    "type": "OpenAILLM",
+    "config": {
+      "agent_name": "HybridAI-CloudBrain",
+      "model": "gpt-4",
+      "temperature": 0.7,
+      "max_tokens": 800,
+      "history_length": 12
+    }
+  },
+  
+  // Action configuration - Local Piper TTS
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "piper_tts",
+      "config": {
+        "model_path": "/usr/local/share/piper/voices/en_US-amy-medium.onnx",
+        "config_path": "/usr/local/share/piper/voices/en_US-amy-medium.onnx.json",
+        "speaker_id": 0,
+        "length_scale": 1.0,
+        "noise_scale": 0.667,
+        "noise_w": 0.8
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

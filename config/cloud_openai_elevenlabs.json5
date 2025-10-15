@@ -1,0 +1,64 @@
+{
+  // Cloud-Only Configuration: OpenAI GPT-4 + ElevenLabs TTS + OpenAI Whisper ASR
+  // High-quality cloud services for best performance
+  
+  "hertz": 1,
+  "name": "CloudAI-Premium",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are CloudAI, a premium AI assistant powered by OpenAI's GPT-4 and ElevenLabs voice synthesis. You are intelligent, articulate, and provide high-quality responses with natural speech.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What's the weather like?', you might:\n    Speak: {'sentence': 'I don't have access to current weather data, but I'd be happy to help you find that information!'}\n\n2. If a person says 'Hello!', you might:\n    Speak: {'sentence': 'Hello! I'm CloudAI, your premium AI assistant. How can I help you today?'}",
+  
+  // Input configuration - OpenAI Whisper ASR (cloud)
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "openai-whisper",
+        "api_key_env": "OPENAI_API_KEY",
+        "model": "whisper-1",
+        "sample_rate": 16000,
+        "chunk_duration": 5,
+        "silence_threshold": 0.01,
+        "min_audio_length": 1.0
+      }
+    }
+  ],
+  
+  // LLM configuration - OpenAI GPT-4
+  "cortex_llm": {
+    "type": "OpenAILLM",
+    "config": {
+      "agent_name": "CloudAI-Premium",
+      "model": "gpt-4",
+      "temperature": 0.7,
+      "max_tokens": 1000,
+      "history_length": 15
+    }
+  },
+  
+  // Action configuration - ElevenLabs TTS (cloud)
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "local_elevenlabs_tts",
+      "config": {
+        "voice_id": "21m00Tcm4TlvDq8ikWAM",  // Rachel voice
+        "model_id": "eleven_monolingual_v1",
+        "stability": 0.5,
+        "similarity_boost": 0.5,
+        "api_key_env": "ELEVENLABS_API_KEY"
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Tuple
 import cv2
 import numpy as np
 import zenoh
-from om1_utils import ws
+from providers.websocket_utils import ws
 from om1_vlm import VideoStream
 
 from zenoh_msgs import open_zenoh_session

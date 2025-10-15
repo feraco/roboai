@@ -1,0 +1,62 @@
+{
+  // Hybrid Configuration: Mixed Cloud Services
+  // Different cloud providers for different services
+  
+  "hertz": 1,
+  "name": "HybridAI-MultiCloud",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are HybridAI MultiCloud, an assistant that leverages the best services from different cloud providers. You combine Google's speech recognition, OpenAI's language model, and ElevenLabs' voice synthesis.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What services do you use?', you might:\n    Speak: {'sentence': 'I use Google for speech recognition, OpenAI for language understanding, and ElevenLabs for natural voice synthesis - the best of each provider!'}\n\n2. If a person says 'That sounds complex!', you might:\n    Speak: {'sentence': 'It might seem complex, but it gives you the highest quality experience by using each provider's strengths.'}",
+  
+  // Input configuration - Google ASR (cloud)
+  "agent_inputs": [
+    {
+      "type": "GoogleASR",
+      "config": {
+        "language_code": "en-US",
+        "sample_rate": 16000,
+        "encoding": "LINEAR16",
+        "enable_automatic_punctuation": true,
+        "api_key_env": "GOOGLE_CLOUD_API_KEY"
+      }
+    }
+  ],
+  
+  // LLM configuration - OpenAI GPT-4 (cloud)
+  "cortex_llm": {
+    "type": "OpenAILLM",
+    "config": {
+      "agent_name": "HybridAI-MultiCloud",
+      "model": "gpt-4",
+      "temperature": 0.7,
+      "max_tokens": 900,
+      "history_length": 14
+    }
+  },
+  
+  // Action configuration - ElevenLabs TTS (cloud)
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "local_elevenlabs_tts",
+      "config": {
+        "voice_id": "pNInz6obpgDQGcFmaJgB",  // Adam voice
+        "model_id": "eleven_monolingual_v1",
+        "stability": 0.5,
+        "similarity_boost": 0.5,
+        "api_key_env": "ELEVENLABS_API_KEY"
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

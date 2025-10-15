@@ -1,0 +1,63 @@
+{
+  // Local-Only Configuration: Ollama LLM + Festival TTS + Vosk ASR
+  // Alternative offline setup with different local models
+  
+  "hertz": 1,
+  "name": "LocalAI-Alternative",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are LocalAI Alternative, an offline AI assistant using open-source models. You are reliable, efficient, and focused on providing helpful responses while maintaining complete privacy.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What makes you different?', you might:\n    Speak: {'sentence': 'I use alternative open-source models like Festival for speech synthesis, providing a different voice and approach while staying completely offline.'}\n\n2. If a person says 'Good afternoon!', you might:\n    Speak: {'sentence': 'Good afternoon! I'm LocalAI Alternative, your offline assistant with open-source models.'}",
+  
+  // Input configuration - Vosk ASR (local)
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "vosk",
+        "model_path": "/usr/local/share/vosk/models/vosk-model-en-us-0.22",
+        "sample_rate": 16000,
+        "chunk_duration": 5,
+        "silence_threshold": 0.01,
+        "min_audio_length": 1.0
+      }
+    }
+  ],
+  
+  // LLM configuration - Ollama with different model
+  "cortex_llm": {
+    "type": "OllamaLLM",
+    "config": {
+      "agent_name": "LocalAI-Alternative",
+      "base_url": "http://localhost:11434",
+      "model": "mistral:7b",  // Alternative model
+      "temperature": 0.8,
+      "num_predict": 400,
+      "timeout": 100,
+      "history_length": 6
+    }
+  },
+  
+  // Action configuration - Festival TTS (local)
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "festival_tts",
+      "config": {
+        "voice": "cmu_us_slt_arctic_hts",  // Festival voice
+        "rate": 1.0,
+        "volume": 1.0
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

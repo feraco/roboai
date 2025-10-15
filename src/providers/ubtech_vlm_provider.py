@@ -1,7 +1,7 @@
 import logging
 from typing import Callable, Optional, Tuple
 
-from om1_utils import ws
+from providers.websocket_utils import ws
 
 from .singleton import singleton
 from .ubtech_video_stream import UbtechCameraVideoStream

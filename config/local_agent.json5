@@ -2,19 +2,17 @@
   // Local OM1 Agent Configuration
   // This configuration runs fully independent of OpenMind's API
   
+  "hertz": 1,
   "name": "Astra",
-  "description": "Local OM1 agent with OpenAI Whisper ASR, OpenAI/Ollama LLM, and ElevenLabs/Piper TTS",
   
   // Remove OpenMind API key dependency
   "api_key": null,
   
-  // Agent personality and behavior
-  "personality": "You are Astra, a helpful AI assistant. You are friendly, knowledgeable, and always ready to help.",
-  "rules": [
-    "Always be helpful and polite",
-    "Provide clear and concise responses",
-    "Ask for clarification when needed"
-  ],
+  // System prompts
+  "system_prompt_base": "You are Astra, a helpful AI assistant. You are friendly, knowledgeable, and always ready to help. Respond naturally and conversationally.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What's the weather like?', you might:\n    Speak: {'sentence': 'I don't have access to current weather data, but I'd be happy to help you find that information!'}\n\n2. If a person says 'Hello!', you might:\n    Speak: {'sentence': 'Hello! How can I help you today?'}",
+
   
   // Input configuration - Local ASR with OpenAI Whisper
   "agent_inputs": [
@@ -60,6 +58,7 @@
   "agent_actions": [
     {
       "name": "speak",
+      "llm_label": "speak",
       "connector": "local_elevenlabs_tts",
       "config": {
         "voice_id": "EXAVITQu4vr4xnSDxMaL",  // ElevenLabs voice ID
@@ -73,19 +72,10 @@
     }
   ],
   
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
   // Background processes (optional)
-  "agent_backgrounds": [],
-  
-  // Runtime configuration
-  "runtime": {
-    "mode": "single",
-    "loop_delay": 0.1,
-    "max_history": 100
-  },
-  
-  // Logging configuration
-  "logging": {
-    "level": "INFO",
-    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  }
+  "backgrounds": [],
+
 }

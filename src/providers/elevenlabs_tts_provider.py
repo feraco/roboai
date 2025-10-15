@@ -1,8 +1,7 @@
 import logging
 from typing import Callable, Optional, Union
 
-from om1_speech import AudioOutputStream
-
+from .audio_stream import AudioOutputStream
 from .singleton import singleton
 
 

@@ -28,6 +28,8 @@ cd OM1
 
 **📚 Detailed Guides:**
 - **[QUICKSTART.md](QUICKSTART.md)** - Get running in 5 minutes
+- **[CONFIG_GUIDE.md](CONFIG_GUIDE.md)** - Complete configuration guide with 10+ setups
+- **[QUICK_CONFIG_REFERENCE.md](QUICK_CONFIG_REFERENCE.md)** - Quick reference for all configurations
 - **[API_KEYS_GUIDE.md](API_KEYS_GUIDE.md)** - Where to get API keys and how to use them
 - **[LOCAL_SETUP.md](LOCAL_SETUP.md)** - Complete local setup guide
 
@@ -35,8 +37,44 @@ cd OM1
 ```bash
 python test_api_keys.py      # Verify your API keys work
 python test_startup.py       # Test system startup
-python src/run.py start local_agent  # Run with cloud services
+uv run src/run.py local_agent  # Run with cloud services
 ```
+
+## 🎯 Available Configurations
+
+OM1 now includes **10+ pre-configured setups** for different use cases:
+
+### 🌐 Cloud Configurations (High Quality)
+- `cloud_openai_elevenlabs` - Premium OpenAI + ElevenLabs setup
+- `cloud_gemini_google` - Google ecosystem (Gemini + Google TTS/ASR)
+- `cloud_openrouter_azure` - Multi-provider cloud setup
+
+### 🏠 Local Configurations (Complete Privacy)
+- `local_ollama_piper` - Fully offline with Ollama + Piper TTS
+- `local_ollama_festival` - Alternative offline setup
+- `gpu_optimized_local` - High-performance GPU-accelerated local
+
+### 🔄 Hybrid Configurations (Best of Both)
+- `hybrid_cloud_llm_local_audio` - Cloud reasoning, local audio
+- `hybrid_local_llm_cloud_audio` - Local reasoning, cloud audio
+- `hybrid_mixed_cloud` - Best services from each provider
+
+### 🛠️ Development Configurations
+- `dev_mock_services` - No API keys needed, perfect for testing
+
+**Quick Start Examples:**
+```bash
+# Premium cloud experience
+uv run src/run.py cloud_openai_elevenlabs
+
+# Complete privacy (offline)
+uv run src/run.py local_ollama_piper
+
+# Development/testing
+uv run src/run.py dev_mock_services
+```
+
+See **[CONFIG_GUIDE.md](CONFIG_GUIDE.md)** for detailed setup instructions for each configuration.
 
 ## Getting Started - Original Hello World
 
