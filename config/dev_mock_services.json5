@@ -1,0 +1,67 @@
+{
+  // Development Configuration: Mock Services for Testing
+  // No external dependencies - perfect for development and testing
+  
+  "hertz": 2,  // Faster for development
+  "name": "DevAI-Mock",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are DevAI, a development assistant using mock services for testing. You help developers test the system without requiring external API keys or services.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'Are you real?', you might:\n    Speak: {'sentence': 'I'm a development version using mock services - perfect for testing without API costs!'}\n\n2. If a person says 'Test message', you might:\n    Speak: {'sentence': 'Test received! All systems working in development mode.'}",
+  
+  // Input configuration - Mock Input
+  "agent_inputs": [
+    {
+      "type": "MockInput",
+      "config": {
+        "mock_messages": [
+          "Hello, this is a test message",
+          "How are you doing today?",
+          "Can you hear me clearly?",
+          "Testing the mock input system"
+        ],
+        "interval": 10,  // Send mock message every 10 seconds
+        "random": true
+      }
+    }
+  ],
+  
+  // LLM configuration - Mock LLM
+  "cortex_llm": {
+    "type": "MockLLM",
+    "config": {
+      "agent_name": "DevAI-Mock",
+      "responses": [
+        "This is a mock response from the development LLM.",
+        "I'm working in development mode with mock services.",
+        "All systems are functioning correctly in test mode.",
+        "Development configuration is active and responding."
+      ],
+      "delay": 1.0,  // Simulate processing delay
+      "random": true
+    }
+  },
+  
+  // Action configuration - Mock TTS
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "mock_tts",
+      "config": {
+        "log_output": true,
+        "simulate_delay": 0.5,
+        "voice_name": "MockVoice-Dev"
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

@@ -78,12 +78,18 @@ class LocalASRInput(FuserInput[str]):
         # Initialize sleep ticker provider
         self.global_sleep_ticker_provider = SleepTickerProvider()
 
-        # Start audio processing
-        self._start_audio_processing()
+        # Audio processing task will be started when the event loop is available
+        self._audio_task = None
 
     def _start_audio_processing(self):
         """Start the audio processing loop."""
-        asyncio.create_task(self._audio_processing_loop())
+        try:
+            loop = asyncio.get_running_loop()
+            if self._audio_task is None or self._audio_task.done():
+                self._audio_task = loop.create_task(self._audio_processing_loop())
+        except RuntimeError:
+            # No event loop running, will start later
+            pass
 
     async def _audio_processing_loop(self):
         """Main audio processing loop."""
@@ -212,6 +218,10 @@ class LocalASRInput(FuserInput[str]):
         Optional[str]
             Message from the buffer if available, None otherwise
         """
+        # Start audio processing if not already started
+        if self._audio_task is None or self._audio_task.done():
+            self._start_audio_processing()
+            
         await asyncio.sleep(0.1)
         try:
             message = self.message_buffer.get_nowait()

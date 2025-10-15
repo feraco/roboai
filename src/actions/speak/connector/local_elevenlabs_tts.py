@@ -4,15 +4,18 @@ import logging
 import os
 import subprocess
 import tempfile
+import time
 from typing import Optional
 
 import aiohttp
 import sounddevice as sd
 import soundfile as sf
-from actions.speak.connector.base import TTSConnector
+from actions.base import ActionConfig, ActionConnector
+from actions.speak.interface import SpeakInput
+from providers.io_provider import IOProvider
 
 
-class LocalElevenLabsTTSConnector(TTSConnector):
+class LocalElevenLabsTTSConnector(ActionConnector[SpeakInput]):
     """
     Local ElevenLabs TTS connector that uses ElevenLabs API directly or falls back to Piper.
     
@@ -21,32 +24,33 @@ class LocalElevenLabsTTSConnector(TTSConnector):
     2. Piper TTS (local fallback if ElevenLabs is not available)
     """
 
-    def __init__(self, config: dict = None):
+    def __init__(self, config: ActionConfig):
         """
         Initialize the LocalElevenLabsTTSConnector.
 
         Parameters
         ----------
-        config : dict, optional
-            Configuration dictionary containing TTS settings
+        config : ActionConfig
+            Configuration object containing TTS settings
         """
         super().__init__(config)
         
-        self.config = config or {}
+        # Initialize IO provider for logging
+        self.io_provider = IOProvider()
         
         # ElevenLabs configuration
         self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
-        self.voice_id = self.config.get("voice_id", "EXAVITQu4vr4xnSDxMaL")  # Default voice
-        self.model_id = self.config.get("model_id", "eleven_monolingual_v1")
-        self.stability = self.config.get("stability", 0.5)
-        self.similarity_boost = self.config.get("similarity_boost", 0.5)
+        self.voice_id = getattr(self.config, "voice_id", "EXAVITQu4vr4xnSDxMaL")  # Default voice
+        self.model_id = getattr(self.config, "model_id", "eleven_monolingual_v1")
+        self.stability = getattr(self.config, "stability", 0.5)
+        self.similarity_boost = getattr(self.config, "similarity_boost", 0.5)
         
         # Piper configuration (fallback)
-        self.piper_model = self.config.get("piper_model", "en_US-lessac-medium")
-        self.piper_executable = self.config.get("piper_executable", "piper")
+        self.piper_model = getattr(self.config, "piper_model", "en_US-lessac-medium")
+        self.piper_executable = getattr(self.config, "piper_executable", "piper")
         
         # Audio configuration
-        self.sample_rate = self.config.get("sample_rate", 22050)
+        self.sample_rate = getattr(self.config, "sample_rate", 22050)
         
         # HTTP session for ElevenLabs API
         self.session = None
@@ -277,3 +281,30 @@ class LocalElevenLabsTTSConnector(TTSConnector):
         """Async context manager exit."""
         if self.session and not self.session.closed:
             await self.session.close()
+
+    async def connect(self, input_protocol: SpeakInput) -> None:
+        """
+        Connect method required by ActionConnector.
+        
+        This method handles the speak action by synthesizing and playing the text.
+        
+        Parameters
+        ----------
+        input_protocol : SpeakInput
+            The input containing the text to speak
+        """
+        try:
+            text = input_protocol.action
+            if text and len(text.strip()) > 0:
+                success = await self.speak(text.strip())
+                if success:
+                    logging.info(f"Successfully spoke: {text[:50]}...")
+                    # Log to IO provider
+                    self.io_provider.add_output("TTS", text.strip(), time.time())
+                else:
+                    logging.error(f"Failed to speak: {text[:50]}...")
+            else:
+                logging.warning("Empty text provided to speak action")
+                
+        except Exception as e:
+            logging.error(f"Error in speak connector: {e}")

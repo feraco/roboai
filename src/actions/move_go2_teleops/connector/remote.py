@@ -3,7 +3,7 @@ import logging
 import time
 from enum import Enum
 
-from om1_utils import ws
+from ...providers.websocket_utils import ws
 
 from actions.base import ActionConfig, ActionConnector
 from actions.move_go2_teleops.interface import MoveInput

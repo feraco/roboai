@@ -2,7 +2,7 @@ import json
 import logging
 import time
 
-from om1_utils import ws
+from ...providers.websocket_utils import ws
 
 from actions.base import ActionConfig, ActionConnector
 from actions.move_turtle.interface import MoveInput

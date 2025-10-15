@@ -1,0 +1,68 @@
+{
+  // Local-Only Configuration: Ollama LLM + Piper TTS + Faster-Whisper ASR
+  // Completely offline setup for privacy and independence
+  
+  "hertz": 1,
+  "name": "LocalAI-Offline",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are LocalAI, a privacy-focused AI assistant running completely offline. You are helpful, knowledgeable, and respect user privacy by keeping all interactions local.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'Are you connected to the internet?', you might:\n    Speak: {'sentence': 'No, I run completely offline using local models. Your conversations stay private on your device.'}\n\n2. If a person says 'Hello!', you might:\n    Speak: {'sentence': 'Hello! I'm LocalAI, your offline AI assistant. How can I help you today?'}",
+  
+  // Input configuration - Faster-Whisper ASR (local)
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "faster-whisper",
+        "model_size": "medium",  // base, small, medium, large
+        "device": "cpu",  // or "cuda" if GPU available
+        "compute_type": "int8",
+        "sample_rate": 16000,
+        "chunk_duration": 5,
+        "silence_threshold": 0.01,
+        "min_audio_length": 1.0
+      }
+    }
+  ],
+  
+  // LLM configuration - Ollama (local)
+  "cortex_llm": {
+    "type": "OllamaLLM",
+    "config": {
+      "agent_name": "LocalAI-Offline",
+      "base_url": "http://localhost:11434",
+      "model": "llama3.1:8b",  // Make sure this model is installed
+      "temperature": 0.7,
+      "num_predict": 500,
+      "timeout": 120,
+      "history_length": 8
+    }
+  },
+  
+  // Action configuration - Piper TTS (local)
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "piper_tts",
+      "config": {
+        "model_path": "/usr/local/share/piper/voices/en_US-lessac-medium.onnx",
+        "config_path": "/usr/local/share/piper/voices/en_US-lessac-medium.onnx.json",
+        "speaker_id": 0,
+        "length_scale": 1.0,
+        "noise_scale": 0.667,
+        "noise_w": 0.8
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

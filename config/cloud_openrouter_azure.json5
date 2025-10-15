@@ -1,0 +1,64 @@
+{
+  // Cloud-Only Configuration: OpenRouter (Claude/GPT) + Azure TTS + OpenAI Whisper
+  // Multi-model cloud setup with OpenRouter for LLM flexibility
+  
+  "hertz": 1,
+  "name": "OpenRouter-Cloud",
+  "api_key": null,
+  
+  // System prompts
+  "system_prompt_base": "You are OpenRouter AI, a versatile assistant that can use different AI models through OpenRouter. You are adaptable, intelligent, and provide high-quality responses tailored to each conversation.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What models can you use?', you might:\n    Speak: {'sentence': 'I can access various AI models through OpenRouter, including Claude, GPT-4, and others, allowing me to provide the best response for each situation.'}\n\n2. If a person says 'Hi there!', you might:\n    Speak: {'sentence': 'Hello! I'm OpenRouter AI, with access to multiple AI models to help you with whatever you need.'}",
+  
+  // Input configuration - OpenAI Whisper ASR (cloud)
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "openai-whisper",
+        "api_key_env": "OPENAI_API_KEY",
+        "model": "whisper-1",
+        "sample_rate": 16000,
+        "chunk_duration": 5,
+        "silence_threshold": 0.01,
+        "min_audio_length": 1.0
+      }
+    }
+  ],
+  
+  // LLM configuration - OpenRouter
+  "cortex_llm": {
+    "type": "OpenRouter",
+    "config": {
+      "agent_name": "OpenRouter-Cloud",
+      "model": "anthropic/claude-3-sonnet",  // Can be changed to other models
+      "temperature": 0.7,
+      "max_tokens": 1000,
+      "history_length": 10
+    }
+  },
+  
+  // Action configuration - Azure TTS (cloud)
+  "agent_actions": [
+    {
+      "name": "speak",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "azure_tts",
+      "config": {
+        "voice_name": "en-US-AriaNeural",
+        "speech_rate": "0%",
+        "speech_pitch": "0%",
+        "api_key_env": "AZURE_SPEECH_KEY",
+        "region": "eastus"
+      }
+    }
+  ],
+  
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
+  // Background processes (optional)
+  "backgrounds": []
+}

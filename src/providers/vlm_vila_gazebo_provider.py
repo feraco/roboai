@@ -1,7 +1,7 @@
 import logging
 from typing import Callable, Optional
 
-from om1_utils import ws
+from providers.websocket_utils import ws
 from om1_vlm import GazeboVideoStream
 
 from .singleton import singleton
