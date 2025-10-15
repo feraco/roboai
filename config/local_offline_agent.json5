@@ -1,0 +1,75 @@
+{
+  // Fully Offline OM1 Agent Configuration
+  // This configuration runs completely offline with no external API dependencies
+  
+  "name": "Astra-Offline",
+  "description": "Fully offline OM1 agent with Faster-Whisper ASR, Ollama LLM, and Piper TTS",
+  
+  // Remove OpenMind API key dependency
+  "api_key": null,
+  
+  // Agent personality and behavior
+  "personality": "You are Astra, a helpful AI assistant running completely offline. You are friendly, knowledgeable, and always ready to help.",
+  "rules": [
+    "Always be helpful and polite",
+    "Provide clear and concise responses",
+    "Ask for clarification when needed",
+    "Remember that you are running offline with local models"
+  ],
+  
+  // Input configuration - Local ASR with Faster-Whisper (offline)
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "faster-whisper",
+        "model_size": "base",  // or "small", "medium", "large"
+        "sample_rate": 16000,
+        "chunk_duration": 5,
+        "silence_threshold": 0.01,
+        "min_audio_length": 1.0
+      }
+    }
+  ],
+  
+  // LLM configuration - Ollama (local)
+  "cortex_llm": {
+    "type": "OllamaLLM",
+    "config": {
+      "base_url": "http://localhost:11434",
+      "model": "llama3",  // Make sure this model is installed in Ollama
+      "temperature": 0.7,
+      "timeout": 60  // Longer timeout for local inference
+    }
+  },
+  
+  // Action configuration - Piper TTS (offline)
+  "agent_actions": [
+    {
+      "name": "speak",
+      "connector": "local_elevenlabs_tts",
+      "config": {
+        "piper_model": "en_US-lessac-medium",
+        "piper_executable": "piper",
+        "sample_rate": 22050
+        // No ElevenLabs API key - will use Piper fallback
+      }
+    }
+  ],
+  
+  // Background processes (optional)
+  "agent_backgrounds": [],
+  
+  // Runtime configuration
+  "runtime": {
+    "mode": "single",
+    "loop_delay": 0.1,
+    "max_history": 100
+  },
+  
+  // Logging configuration
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  }
+}

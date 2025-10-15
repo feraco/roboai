@@ -1,0 +1,91 @@
+{
+  // Local OM1 Agent Configuration
+  // This configuration runs fully independent of OpenMind's API
+  
+  "name": "Astra",
+  "description": "Local OM1 agent with OpenAI Whisper ASR, OpenAI/Ollama LLM, and ElevenLabs/Piper TTS",
+  
+  // Remove OpenMind API key dependency
+  "api_key": null,
+  
+  // Agent personality and behavior
+  "personality": "You are Astra, a helpful AI assistant. You are friendly, knowledgeable, and always ready to help.",
+  "rules": [
+    "Always be helpful and polite",
+    "Provide clear and concise responses",
+    "Ask for clarification when needed"
+  ],
+  
+  // Input configuration - Local ASR with OpenAI Whisper
+  "agent_inputs": [
+    {
+      "type": "LocalASRInput",
+      "config": {
+        "engine": "openai-whisper",  // or "faster-whisper" for offline
+        "sample_rate": 16000,
+        "chunk_duration": 5,
+        "silence_threshold": 0.01,
+        "min_audio_length": 1.0
+      }
+    }
+  ],
+  
+  // LLM configuration - OpenAI GPT (uses OPENAI_API_KEY from .env)
+  "cortex_llm": {
+    "type": "OpenAILLM",
+    "config": {
+      "model": "gpt-4o-mini",
+      "temperature": 0.7,
+      "max_tokens": 1000,
+      "timeout": 30
+      // api_key will be loaded from OPENAI_API_KEY environment variable
+    }
+  },
+  
+  // Alternative LLM configuration - Ollama (local)
+  // Uncomment this and comment out the OpenAI config above to use Ollama
+  /*
+  "cortex_llm": {
+    "type": "OllamaLLM",
+    "config": {
+      "base_url": "http://localhost:11434",
+      "model": "llama3",
+      "temperature": 0.7,
+      "timeout": 30
+    }
+  },
+  */
+  
+  // Action configuration - Local TTS with ElevenLabs/Piper fallback
+  "agent_actions": [
+    {
+      "name": "speak",
+      "connector": "local_elevenlabs_tts",
+      "config": {
+        "voice_id": "EXAVITQu4vr4xnSDxMaL",  // ElevenLabs voice ID
+        "model_id": "eleven_monolingual_v1",
+        "stability": 0.5,
+        "similarity_boost": 0.5,
+        "piper_model": "en_US-lessac-medium",  // Fallback Piper model
+        "sample_rate": 22050
+        // elevenlabs_api_key will be loaded from ELEVENLABS_API_KEY environment variable
+      }
+    }
+  ],
+  
+  // Background processes (optional)
+  "agent_backgrounds": [],
+  
+  // Runtime configuration
+  "runtime": {
+    "mode": "single",
+    "loop_delay": 0.1,
+    "max_history": 100
+  },
+  
+  // Logging configuration
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  }
+}
