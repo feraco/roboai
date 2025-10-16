@@ -1,27 +1,30 @@
 {
-  // Fully Offline OM1 Agent Configuration
-  // This configuration runs completely offline with no external API dependencies
+  // macOS Offline OM1 Agent Configuration
+  // This configuration runs completely offline with native macOS speech synthesis
   
   "hertz": 1,
-  "name": "Astra-Offline",
+  "name": "Astra-macOS",
   "api_key": null,
   
-  // System prompts (required structure)
-  "system_prompt_base": "You are Astra, a helpful AI assistant running completely offline. You are friendly, knowledgeable, and always ready to help.",
+  // System prompts
+  "system_prompt_base": "You are Astra, a helpful AI assistant running completely offline on macOS. You are friendly, knowledgeable, and always ready to help with a natural speaking voice.",
   "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
-  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What's the weather like?', you might:\n    Speak: {'sentence': 'I don't have access to current weather data, but I'd be happy to help you find that information!'}\n\n2. If a person says 'Hello!', you might:\n    Speak: {'sentence': 'Hello! I'm Astra, your offline AI assistant. How can I help you today?'}",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What's the weather like?', you might:\n    Speak: {'sentence': 'I don't have access to current weather data, but I'd be happy to help you find that information!'}\n\n2. If a person says 'Hello!', you might:\n    Speak: {'sentence': 'Hello! I'm Astra, your offline AI assistant running on macOS. How can I help you today?'}",
   
   // Input configuration - Local ASR with Faster-Whisper (offline)
   "agent_inputs": [
     {
-      "type": "LocalASRInput",
+      "type": "FasterWhisperASR",
       "config": {
-        "engine": "faster-whisper",
-        "model_size": "base",  // or "small", "medium", "large"
-        "sample_rate": 16000,
-        "chunk_duration": 5,
-        "silence_threshold": 0.01,
-        "min_audio_length": 1.0
+        "model_size": "base",
+        "device": "cpu",
+        "compute_type": "int8",
+        "language": "en",
+        "vad_filter": true,
+        "vad_parameters": {
+          "min_silence_duration_ms": 500,
+          "speech_pad_ms": 400
+        }
       }
     }
   ],
@@ -30,7 +33,7 @@
   "cortex_llm": {
     "type": "OllamaLLM",
     "config": {
-      "agent_name": "Astra-Offline",
+      "agent_name": "Astra-macOS",
       "base_url": "http://localhost:11434",
       "model": "llama3.1:8b",  // Make sure this model is installed in Ollama
       "temperature": 0.7,
@@ -39,7 +42,7 @@
     }
   },
   
-  // Action configuration - Native macOS AVSpeechSynthesizer (with Piper fallback)
+  // Action configuration - Native macOS AVSpeechSynthesizer
   "agent_actions": [
     {
       "name": "speak",

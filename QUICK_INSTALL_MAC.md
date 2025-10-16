@@ -1,14 +1,19 @@
 # Quick Install Instructions for Mac
 
 ## Prerequisites
-- macOS with Homebrew installed
+- macOS 10.14+ (for AVSpeechSynthesizer support)
+- Homebrew installed
 - Python 3.10+ available
+- Xcode Command Line Tools (for Swift compilation)
 
 ## 1. Install System Dependencies
 
 ```bash
 # Install Homebrew if not already installed
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install.sh)"
+
+# Install Xcode Command Line Tools (for Swift support)
+xcode-select --install
 
 # Install required system packages
 brew install portaudio
@@ -80,21 +85,33 @@ ollama pull llama3.1:8b
 cd roboai
 source .venv/bin/activate
 
-# Run the offline agent
+# Run the offline agent (now with native macOS speech!)
 uv run src/run.py local_offline_agent
+
+# Or use the dedicated macOS configuration
+uv run src/run.py macos_offline_agent
 ```
+
+## 🎉 New: Native macOS Speech Integration
+
+Your agent now uses **Apple's AVSpeechSynthesizer** for:
+- ✅ **Zero dependencies** - No external TTS libraries needed
+- ✅ **Native quality** - High-quality, natural-sounding speech
+- ✅ **Multiple voices** - Access to all macOS system voices
+- ✅ **Perfect integration** - Seamless macOS experience
+- ✅ **Automatic fallback** - Falls back to `say` command if needed
 
 ## Expected Output
 
 The agent should start successfully and show:
 - ✅ Faster-Whisper model loading
-- ✅ Piper TTS initialization (may show "not available" - that's OK)
+- ✅ AVSpeechSynthesizer TTS initialization (native macOS speech)
 - ✅ LLM initialization with function schemas
 - ✅ Agent starting with configuration
 
 You may see these expected warnings/errors:
 - Audio device errors (normal in headless environment)
-- Piper TTS not available (will use mock TTS)
+- Swift compilation messages (normal for first run)
 
 ## Troubleshooting
 
@@ -111,6 +128,18 @@ curl http://localhost:11434/api/tags
 
 # Restart Ollama
 brew services restart ollama
+```
+
+### If Swift/TTS errors occur:
+```bash
+# Verify Xcode Command Line Tools
+xcode-select -p
+
+# Test Swift compilation
+echo 'print("Hello Swift")' | swift -
+
+# Check available voices (optional)
+say -v '?'
 ```
 
 ### If audio errors persist:
