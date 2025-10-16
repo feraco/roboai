@@ -2,20 +2,14 @@
   // Fully Offline OM1 Agent Configuration
   // This configuration runs completely offline with no external API dependencies
   
+  "hertz": 1,
   "name": "Astra-Offline",
-  "description": "Fully offline OM1 agent with Faster-Whisper ASR, Ollama LLM, and Piper TTS",
-  
-  // Remove OpenMind API key dependency
   "api_key": null,
   
-  // Agent personality and behavior
-  "personality": "You are Astra, a helpful AI assistant running completely offline. You are friendly, knowledgeable, and always ready to help.",
-  "rules": [
-    "Always be helpful and polite",
-    "Provide clear and concise responses",
-    "Ask for clarification when needed",
-    "Remember that you are running offline with local models"
-  ],
+  // System prompts (required structure)
+  "system_prompt_base": "You are Astra, a helpful AI assistant running completely offline. You are friendly, knowledgeable, and always ready to help.",
+  "system_governance": "Here are the laws that govern your actions. Do not violate these laws.\nFirst Law: A robot cannot harm a human or allow a human to come to harm.\nSecond Law: A robot must obey orders from humans, unless those orders conflict with the First Law.\nThird Law: A robot must protect itself, as long as that protection doesn't conflict with the First or Second Law.",
+  "system_prompt_examples": "Here are some examples of interactions:\n\n1. If a person asks 'What's the weather like?', you might:\n    Speak: {'sentence': 'I don't have access to current weather data, but I'd be happy to help you find that information!'}\n\n2. If a person says 'Hello!', you might:\n    Speak: {'sentence': 'Hello! I'm Astra, your offline AI assistant. How can I help you today?'}",
   
   // Input configuration - Local ASR with Faster-Whisper (offline)
   "agent_inputs": [
@@ -36,10 +30,12 @@
   "cortex_llm": {
     "type": "OllamaLLM",
     "config": {
+      "agent_name": "Astra-Offline",
       "base_url": "http://localhost:11434",
-      "model": "llama3",  // Make sure this model is installed in Ollama
+      "model": "llama3.1:8b",  // Make sure this model is installed in Ollama
       "temperature": 0.7,
-      "timeout": 60  // Longer timeout for local inference
+      "timeout": 60,  // Longer timeout for local inference
+      "history_length": 10
     }
   },
   
@@ -47,29 +43,23 @@
   "agent_actions": [
     {
       "name": "speak",
-      "connector": "local_elevenlabs_tts",
+      "llm_label": "speak",
+      "implementation": "passthrough",
+      "connector": "piper_tts",
       "config": {
-        "piper_model": "en_US-lessac-medium",
-        "piper_executable": "piper",
-        "sample_rate": 22050
-        // No ElevenLabs API key - will use Piper fallback
+        "model_path": "/usr/local/share/piper/voices/en_US-lessac-medium.onnx",
+        "config_path": "/usr/local/share/piper/voices/en_US-lessac-medium.onnx.json",
+        "speaker_id": 0,
+        "length_scale": 1.0,
+        "noise_scale": 0.667,
+        "noise_w": 0.8
       }
     }
   ],
   
+  // Simulators (required but can be empty)
+  "simulators": [],
+  
   // Background processes (optional)
-  "agent_backgrounds": [],
-  
-  // Runtime configuration
-  "runtime": {
-    "mode": "single",
-    "loop_delay": 0.1,
-    "max_history": 100
-  },
-  
-  // Logging configuration
-  "logging": {
-    "level": "INFO",
-    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  }
+  "backgrounds": []
 }

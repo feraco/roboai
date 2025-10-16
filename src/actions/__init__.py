@@ -76,9 +76,12 @@ def load_action(
     if "exclude_from_prompt" in action_config:
         exclude_from_prompt = bool(action_config["exclude_from_prompt"])
 
+    # Safe default for llm_label if missing
+    llm_label = action_config.get("llm_label", action_config["name"])
+
     return AgentAction(
         name=action_config["name"],  # type: ignore
-        llm_label=action_config["llm_label"],  # type: ignore
+        llm_label=llm_label,  # type: ignore
         interface=interface,
         connector=connector_class(config),
         exclude_from_prompt=exclude_from_prompt,
