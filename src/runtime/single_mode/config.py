@@ -51,6 +51,48 @@ class RuntimeConfig:
         return load_config(config_name)
 
 
+def validate_config_keys(raw_config: Dict, config_name: str) -> None:
+    """
+    Validate that all required configuration keys are present.
+    
+    Parameters
+    ----------
+    raw_config : Dict
+        The raw configuration dictionary
+    config_name : str
+        Name of the configuration for error reporting
+        
+    Raises
+    ------
+    KeyError
+        If required configuration fields are missing
+    """
+    required_keys = [
+        "hertz", "name", "system_prompt_base", "system_governance", 
+        "system_prompt_examples", "cortex_llm", "agent_actions"
+    ]
+    
+    missing_keys = []
+    for key in required_keys:
+        if key not in raw_config:
+            missing_keys.append(key)
+    
+    if missing_keys:
+        raise KeyError(f"Configuration '{config_name}' is missing required keys: {missing_keys}")
+    
+    # Validate cortex_llm structure
+    if "type" not in raw_config["cortex_llm"]:
+        raise KeyError(f"Configuration '{config_name}' cortex_llm is missing 'type' field")
+    
+    # Validate agent_actions structure
+    for i, action in enumerate(raw_config.get("agent_actions", [])):
+        if "name" not in action:
+            raise KeyError(f"Configuration '{config_name}' agent_actions[{i}] is missing 'name' field")
+        if "connector" not in action:
+            raise KeyError(f"Configuration '{config_name}' agent_actions[{i}] is missing 'connector' field")
+        # llm_label is optional now - we provide a safe default
+
+
 def load_config(config_name: str) -> RuntimeConfig:
     """
     Load and parse a runtime configuration from a JSON file.
@@ -82,8 +124,17 @@ def load_config(config_name: str) -> RuntimeConfig:
         os.path.dirname(__file__), "../../../config", config_name + ".json5"
     )
 
-    with open(config_path, "r+") as f:
-        raw_config = json5.load(f)
+    try:
+        with open(config_path, "r+") as f:
+            raw_config = json5.load(f)
+    except Exception as e:
+        raise Exception(f"Error loading configuration '{config_name}': {str(e)}")
+    
+    # Validate configuration structure
+    try:
+        validate_config_keys(raw_config, config_name)
+    except KeyError as e:
+        raise Exception(f"Error loading configuration: {str(e)}")
 
     g_robot_ip = raw_config.get("robot_ip", None)
     if g_robot_ip is None or g_robot_ip == "" or g_robot_ip == "192.168.0.241":
